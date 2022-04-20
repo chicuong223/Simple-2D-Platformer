@@ -14,7 +14,7 @@ public class EnemyScript : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         var pos = transform.localPosition;
         pos.x += speed * Time.deltaTime;

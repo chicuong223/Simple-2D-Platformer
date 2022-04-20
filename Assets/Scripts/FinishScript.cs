@@ -1,14 +1,18 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FinishScript : MonoBehaviour
 {
-    //private void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if(collision.gameObject.CompareTag("Player"))
-    //    {
-    //        Application.Quit();
-    //    }
-    //}
+    [SerializeField]
+    private string sceneName;
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("Player"))
+        {
+            SceneManager.LoadScene(sceneName);
+        }
+    }
+
 }

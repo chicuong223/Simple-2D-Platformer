@@ -6,16 +6,9 @@ using UnityEngine.UI;
 
 public class MenuScript : MonoBehaviour
 {
-    private void Start()
-    {
-        if(PlayerMovement.Instance != null)
-        {
-            PlayerMovement.Instance = null;
-        }
-    }
     public void StartBtnClick()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("Level 1");
     }
 
     public void QuitBtnClick()

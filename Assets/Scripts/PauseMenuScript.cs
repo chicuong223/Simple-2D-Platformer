@@ -51,7 +51,6 @@ public class PauseMenuScript : MonoBehaviour
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
         GameIsPaused = false;
-        //PlayerMovement.Instance = null;
         SceneManager.LoadScene("Menu");
     }
 }

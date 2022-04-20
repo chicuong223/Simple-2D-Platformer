@@ -16,11 +16,11 @@ public class HUDScript : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = $"Score: {PlayerMovement.Instance.score}"; 
+            scoreText.text = $"Score: {PlayerMovement.score}"; 
         }
         if(livesText != null)
         {
-            livesText.text = $"X {PlayerMovement.Instance.lives}";
+            livesText.text = $"X {PlayerMovement.lives}";
         }
     }
 }

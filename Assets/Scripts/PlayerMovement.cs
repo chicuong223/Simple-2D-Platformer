@@ -24,18 +24,29 @@ public class PlayerMovement : MonoBehaviour
 
     private float horizontalInput;
 
-    private float jumpCoolDown;
+    //variable to show if player has just fallen to the ground
+    private bool jumpFallen;
 
     private AudioSource audioSource;
 
-    public int score;
+    public static int score = 0;
 
-
-    public int lives;
-
-    public static PlayerMovement Instance;
+    public static int lives = 3;
 
     private Vector2 position;
+
+    private bool isJumping;
+
+    //the time the Space key is pressed
+    private float jumpTime;
+
+    //maximum time for holding Space button having effects
+    private float buttonTime = 0.3f;
+
+    //amount of force to pull player down
+    private float cancelRate = 100;
+
+    private bool jumpCancelled;
 
     private void Awake()
     {
@@ -44,28 +55,18 @@ public class PlayerMovement : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         audioSource = GetComponent<AudioSource>();
         circleCollider = GetComponent<CircleCollider2D>();
-        Instance = this;
     }
 
     private void Start()
     {
-        score = 0;
         position = transform.position;
     }
 
     private void FixedUpdate()
     {
-        //jump
-        if(jumpCoolDown >= 0.2f)
+        if(jumpCancelled && isJumping && rb.velocity.y > 0)
         {
-            if(Input.GetKey(KeyCode.Space))
-            {
-                jump();
-            }
-        }
-        else
-        {
-            jumpCoolDown += Time.deltaTime;
+            rb.AddForce(Vector2.down * cancelRate);
         }
         animator.SetBool("IsGrounded", isGrounded());
 
@@ -74,6 +75,11 @@ public class PlayerMovement : MonoBehaviour
             kill();
         }
         Move();
+    }
+
+    private void Update()
+    {
+        jump();
     }
 
     private void Move()
@@ -90,19 +96,34 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = new Vector2(-1, 1);
         }
 
-        Vector2 targetVelocity = new Vector2(horizontalInput * speed, rb.velocity.y);
-        rb.velocity = targetVelocity;
+        //move character
+        rb.velocity = new Vector2(horizontalInput * speed, rb.velocity.y);
         animator.SetBool("Running", horizontalInput != 0);
     }
 
     private void jump()
     {
-        if(isGrounded())
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded())
         {
+            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            isJumping = true;
+            jumpTime = 0;
+            jumpCancelled = false;
             audioSource.time = 0.4f;
             audioSource.Play();
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             animator.SetTrigger("Jump");
+        }
+        if (isJumping)
+        {
+            jumpTime += Time.deltaTime;
+            if(Input.GetKeyUp(KeyCode.Space))
+            {
+                jumpCancelled = true;
+            }
+            if(jumpTime > buttonTime)
+            {
+                isJumping = false;
+            }
         }
     }
 
@@ -191,7 +212,6 @@ public class PlayerMovement : MonoBehaviour
         score += 4;
         obj.GetComponent<SpriteRenderer>().enabled = false;
         obj.GetComponent<CircleCollider2D>().enabled = false;
-        //obj.SetActive(false);
         yield return new WaitForSeconds(0.1f);
         Destroy(obj);
     }
@@ -199,6 +219,11 @@ public class PlayerMovement : MonoBehaviour
     private void kill()
     {
         lives--;
+        if(lives <= 0)
+        {
+            SceneManager.LoadScene("Game Over");
+            return;
+        }
         transform.position = position;
         //Scene currentScene = SceneManager.GetActiveScene();
         //SceneManager.LoadScene(currentScene.name);
