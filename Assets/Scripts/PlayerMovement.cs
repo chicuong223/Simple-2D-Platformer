@@ -74,6 +74,16 @@ public class PlayerMovement : MonoBehaviour
         {
             kill();
         }
+
+        if (!isGrounded() && rb.velocity.y < 0)
+        {
+            animator.SetBool("Falling", true);
+        }
+        else
+        {
+            animator.SetBool("Falling", false);
+        }
+
         Move();
     }
 
